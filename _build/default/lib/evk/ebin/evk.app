@@ -1,7 +1,0 @@
-{application,evk,
-             [{description,"vk.com api library"},
-              {vsn,"0.1.0"},
-              {registered,[]},
-              {applications,[kernel,stdlib,hackney]},
-              {env,[]},
-              {modules,[evk]}]}.
