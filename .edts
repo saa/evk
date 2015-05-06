@@ -1,0 +1,5 @@
+:name "evk_emacs"
+:node-sname "evk-emacs"
+:lib-dirs '("deps" "_build/default/lib")
+:app-include-dirs '("include")
+:xref-error-whitelist '("lager:*")
