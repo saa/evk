@@ -1,4 +1,4 @@
-{application, efb,
+{application, evk,
  [{description, "Erlang library for vkontake API"},
   {vsn, "0.1.0"},
   {registered, []},
