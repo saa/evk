@@ -1,9 +1,13 @@
-{application, evk,
- [{description, "vk.com api library"}
- ,{vsn, "0.1.0"}
- ,{registered, []}
- ,{applications,
-   [kernel, stdlib, hackney]}
- ,{env,[]}
- ,{modules, []}
+{application, efb,
+ [{description, "Erlang library for vkontake API"},
+  {vsn, "0.1.0"},
+  {registered, []},
+  {applications,
+   [kernel,
+    stdlib,
+    hackney,
+    jsx
+   ]},
+  {env,[]},
+  {modules, []}
  ]}.
