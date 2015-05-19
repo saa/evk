@@ -2,6 +2,7 @@
  [{description, "Erlang library for vkontake API"},
   {vsn, "0.1.0"},
   {registered, []},
+  {mod, {'evk_app', []}},
   {applications,
    [kernel,
     stdlib,
