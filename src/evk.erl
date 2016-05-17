@@ -4,6 +4,7 @@
 
 %% API exports
 -export([send_notification/2]).
+-export([groups_is_member/2]).
 
 -type error_result() :: {error, non_neg_integer(), binary()}.
 -type result() :: ok | error_result().
@@ -20,9 +21,29 @@ send_notification(UserIds, Message) when is_list(UserIds),
                                          size(Message) =< 254 ->
     request(send_notification, UserIds, Message).
 
+groups_is_member(GroupId, UserId) when is_binary(GroupId), is_integer(UserId) ->
+    case request(?EVK_GROUPS_IS_MEMBER, [GroupId, UserId]) of
+        {ok, #{<<"member">> := 1}} ->
+            true;
+        {ok, #{<<"member">> := 0}} ->
+            false;
+        Error ->
+            Error
+    end.
+
 %%====================================================================
 %% Internal functions
 %%====================================================================
+
+request(Method, Params) ->
+    URL = get_method_url(Method, Params),
+    {ok, Response} = request(URL),
+    case maps:is_key(<<"error">>, Response) of
+        true ->
+            get_error(maps:get(<<"error">>, Response));
+        false ->
+            {ok, maps:get(<<"response">>, Response)}
+    end.
 
 -spec request(atom(), [binary()], binary()) -> result().
 request(Action, UserIds, Message) ->
@@ -44,11 +65,9 @@ request(send_notification, AccessToken, UserIds, Message) ->
             get_error(Error)
     end.
 
--spec get_error(list()) -> error_result().
+-spec get_error(map()) -> error_result().
 get_error(Error) ->
-    {<<"error_code">>, ErrorCode} = lists:keyfind(<<"error_code">>, 1, Error),
-    {<<"error_msg">>, ErrorMsg} = lists:keyfind(<<"error_msg">>, 1, Error),
-    {error, ErrorCode, ErrorMsg}.
+    {error, maps:get(<<"error_code">>, Error), maps:get(<<"error_msg">>, Error)}.
 
 -spec join([binary() | string()], [binary() | string()]) -> binary().
 join([], Acc) ->
@@ -89,7 +108,7 @@ request(URL) ->
     case hackney:post(URL) of
         {ok, 200, _Hdrs, Ref} ->
             {ok, JSON} = hackney:body(Ref),
-            {ok, jsx:decode(JSON)};
+            {ok, jsx:decode(JSON, [return_maps])};
         {ok, Status, _Hdrs, Ref} ->
             {ok, Error} = hackney:body(Ref),
             {error, {Status, Error}}
@@ -112,3 +131,10 @@ gen_send_notification_url(AccessToken, UserIds, Message) ->
                       "&message=", hackney_url:urlencode(Message),
                       "&access_token=", AccessToken,
                       "&client_secret=", get_client_secret()]).
+
+get_method_url(?EVK_GROUPS_IS_MEMBER = Method, [GroupId, UserId]) when is_integer(UserId) ->
+    UserIdBin = integer_to_binary(UserId),
+    iolist_to_binary([?EVK_API_URL, Method,
+                      "?group_id=", GroupId,
+                      "&user_id=", UserIdBin,
+                      "&extended=1"]).

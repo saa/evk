@@ -1,5 +1,6 @@
 -define(EVK_API_URL, "https://api.vk.com/method/").
--define(EVK_API_VERSION, "5.30").
+-define(EVK_API_VERSION, "5.52").
 
-%% Methods.
+%% Methods
 -define(EVK_SECURE_SEND_NOTIFICATION, <<"secure.sendNotification">>).
+-define(EVK_GROUPS_IS_MEMBER, <<"groups.isMember">>).
