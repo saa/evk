@@ -1,4 +1,4 @@
--define(EVK_API_URL, "https://api.vk.com/method/").
+-define(EVK_API_URL, "http://api.vk.com/method/").
 -define(EVK_API_VERSION, "5.52").
 
 %% Methods
